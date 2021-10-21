@@ -1,205 +1,51 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View, TouchableOpacity, Alert, BackHandler} from 'react-native';
-import {getInicialState} from './script';
-import {styles} from './style';
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import Swiper from 'react-native-web-swiper';
 
-export default function Home() {
-  const [active, setActive] = useState('x');
-  const [win, setWin] = useState(false);
-  const [obj, setObj] = useState(getInicialState());
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  slideContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  slide1: {
+    backgroundColor: 'red',
+  },
+  slide2: {
+    backgroundColor: 'rgba(20,200,20,0.3)',
+  },
+  slide3: {
+    backgroundColor: 'rgba(200,20,20,0.3)',
+  },
+  back: {
+    width: 100,
+    height: 300,
+  },
+});
 
-  useEffect(() => {
-    checkWitn();
-  }, [obj]);
-
-  const checkWitn = () => {
-    const data = ['o', 'x'];
-
-    data.forEach(val => {
-      let diagonalSuperior = '';
-      let diagonalInferior = '';
-      let allLinhe = '';
-
-      const validLine = val + val + val;
-
-      for (l = 0; l < obj.length; l++) {
-        diagonalSuperior += obj[l][l];
-        diagonalInferior += obj[l][obj.length - (l + 1)];
-
-        let checkLinha = '';
-        let checkCol = '';
-
-        for (c = 0; c < obj.length; c++) {
-          checkLinha += obj[l][c];
-          checkCol += obj[c][l];
-        }
-
-        allLinhe += checkLinha + checkCol;
-
-        if (checkCol === validLine) {
-          setWin(true);
-          alert('O vencedor é: ' + val);
-          return;
-        }
-
-        if (checkLinha === validLine) {
-          setWin(true);
-          alert('O vencedor é: ' + val);
-          return;
-        }
-      }
-
-      if (diagonalSuperior == validLine) {
-        setWin(true);
-        alert('O vencedor é: ' + val);
-        return;
-      }
-
-      if (diagonalInferior == validLine) {
-        setWin(true);
-        alert('O vencedor é: ' + val);
-        return;
-      }
-
-      if (
-        (diagonalSuperior.trim() + diagonalInferior.trim() + allLinhe.trim())
-          .length === 24 &&
-        win === false
-      ) {
-        Alert.alert(
-          'Atenção!',
-          'O jogo foi empate!',
-          [
-            {
-              text: 'Reiniciar',
-              onPress: () => handleRestart(true),
-              style: 'cancel',
-            },
-            {text: 'Sair', onPress: () => BackHandler.exitApp()},
-          ],
-          {cancelable: true},
-        );
-      }
-    });
-  };
-
-  const changeActive = () => {
-    if (active == 'x') {
-      setActive('o');
-    } else {
-      setActive('x');
-    }
-  };
-
-  const handleExitApp = () => {
-    Alert.alert(
-      'Atenção!',
-      'Esta preste a sair da aplicação ?',
-      [
-        {
-          text: 'Não',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        {text: 'Sim', onPress: () => BackHandler.exitApp()},
-      ],
-      {cancelable: false},
+export default class Screen extends React.Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Swiper
+          controlsProps={{
+            prevTitle: '',
+            nextTitle: '',
+          }}>
+          <View style={[styles.slideContainer, styles.slide1]}>
+            <Text>Slide 1</Text>
+          </View>
+          <View style={[styles.slideContainer, styles.slide2]}>
+            <Text>Slide 2</Text>
+          </View>
+          <View style={[styles.slideContainer, styles.slide3]}>
+            <Text>Slide 3</Text>
+          </View>
+        </Swiper>
+      </View>
     );
-  };
-
-  const handleRestart = restart => {
-    if (!restart)
-      Alert.alert(
-        'Atenção!',
-        'Vai reiniciar o jogo ?',
-        [
-          {
-            text: 'Não',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel',
-          },
-          {
-            text: 'Sim',
-            onPress: () => {
-              setActive('x');
-              setObj(getInicialState());
-            },
-          },
-        ],
-        {cancelable: false},
-      );
-    else setObj(getInicialState());
-
-    setWin(false);
-    setActive('x');
-  };
-
-  return (
-    <View style={styles.view}>
-      <View style={styles.banner}>
-        <Text style={styles.textColorJogo}> O Jogo da Velha</Text>
-        <Text style={styles.textColorJogo1}>By José Ndonge</Text>
-      </View>
-      <View style={styles.vwJogo}>
-        <View>
-          <Text style={styles.textColor1}>Apenas um jogador!...</Text>
-        </View>
-        <View style={styles.vwtable}>
-          {obj.map((vet, i) => (
-            <View key={i} style={styles.vwrow}>
-              {vet.map((val, c) => (
-                <TouchableOpacity
-                  key={c}
-                  onPress={() => {
-                    const newData = [...obj];
-                    if (win) {
-                      Alert.alert(
-                        'Atenção!',
-                        'O jogo já terminou',
-                        [
-                          {
-                            text: 'Reiniciar',
-                            onPress: () => handleRestart(true),
-                            style: 'cancel',
-                          },
-                          {text: 'Sair', onPress: () => BackHandler.exitApp()},
-                        ],
-                        {cancelable: false},
-                      );
-                      return;
-                    }
-                    if (newData[i][c] == '') {
-                      newData[i][c] = active;
-                      changeActive();
-                      setObj(newData);
-                    }
-                  }}
-                  style={styles.vwBtn}>
-                  <Text key={c + 1} style={styles.textColorB}>
-                    {obj[i][c]}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          ))}
-        </View>
-      </View>
-      <View style={styles.vwFooter}>
-        <TouchableOpacity
-          onPress={() => {
-            handleRestart();
-          }}
-          style={[styles.btnVw, styles.btngreen]}>
-          <Text style={styles.textBtnExt}>Reiniciar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            handleExitApp();
-          }}
-          style={styles.btnVw}>
-          <Text style={styles.textBtnExt}>Sair</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+  }
 }

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --no-jetifier",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "react": "17.0.2",
-    "react-native": "0.66.0"
+    "react-native": "0.66.0",
+    "react-native-calendars": "^1.1267.0",
+    "react-native-web-swiper": "^2.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
